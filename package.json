@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/ducktrshessami/node-exit-hook/issues"
   },
-  "homepage": "https://github.com/ducktrshessami/node-exit-hook#readme"
+  "homepage": "https://github.com/ducktrshessami/node-exit-hook#readme",
+  "dependencies": {
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.1",
+    "@types/node-cron": "^3.0.7"
+  }
 }
