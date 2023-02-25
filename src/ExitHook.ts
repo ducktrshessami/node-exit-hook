@@ -3,13 +3,14 @@ import { schedule, ScheduledTask } from "node-cron";
 export default class ExitHook {
     private readonly options: ParsedExitHookOptions;
     private _active: boolean;
-    private job: ScheduledTask | null;
-    private maxTimeout?: NodeJS.Timeout;
+    private job: Nullable<ScheduledTask>;
+    private maxTimeout: Nullable<NodeJS.Timeout>;
 
     constructor(cronExpression: string, options: ExitHookOptions) {
         this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
         this.job = schedule(cronExpression, this.task, { scheduled: this.options.active });
+        this.maxTimeout = null;
     }
 
     private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
@@ -21,8 +22,15 @@ export default class ExitHook {
         };
     }
 
+    private clearTimeouts(): void {
+        if (this.maxTimeout) {
+            clearTimeout(this.maxTimeout);
+            this.maxTimeout = null;
+        }
+    }
+
     private async exit(): Promise<void> {
-        clearTimeout(this.maxTimeout);
+        this.clearTimeouts();
         if (this.options.beforeExit) {
             await this.options.beforeExit();
         }
@@ -50,9 +58,12 @@ export default class ExitHook {
         if (this.job) {
             this.job.stop();
             this.job = null;
+            this.clearTimeouts();
         }
     }
 }
+
+type Nullable<T> = T | null;
 
 type Awaitable<T> = T | Promise<T>;
 
