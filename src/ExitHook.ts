@@ -4,6 +4,7 @@ export default class ExitHook {
     private readonly options: ParsedExitHookOptions;
     private _active: boolean;
     private job: ScheduledTask | null;
+    private maxTimeout?: NodeJS.Timeout;
 
     constructor(cronExpression: string, options: ExitHookOptions) {
         this.options = ExitHook.parseOptions(options);
@@ -14,12 +15,14 @@ export default class ExitHook {
     private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
         return {
             ...options,
+            restartDelay: options.restartDelay ?? 0,
             active: options.active ?? true,
             exitCode: options.exitCode ?? 0
         };
     }
 
     private async exit(): Promise<void> {
+        clearTimeout(this.maxTimeout);
         if (this.options.beforeExit) {
             await this.options.beforeExit();
         }
@@ -30,8 +33,8 @@ export default class ExitHook {
         if (this._active) {
             await this.exit();
         }
-        else {
-            // timeouts
+        else if (this.options.maxDelay) {
+            this.maxTimeout = setTimeout(this.exit, this.options.maxDelay);
         }
     }
 
@@ -56,13 +59,17 @@ type Awaitable<T> = T | Promise<T>;
 type BeforeExitHook = () => Awaitable<void>;
 
 export type ExitHookOptions = {
+    restartDelay?: number;
+    maxDelay?: number;
     active?: boolean;
     exitCode?: number;
-    beforeExit?: BeforeExitHook
+    beforeExit?: BeforeExitHook;
 };
 
 type ParsedExitHookOptions = {
+    restartDelay: number;
+    maxDelay?: number;
     active: boolean;
     exitCode: number;
-    beforeExit?: BeforeExitHook
+    beforeExit?: BeforeExitHook;
 };
