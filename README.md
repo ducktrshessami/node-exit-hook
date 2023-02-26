@@ -42,6 +42,15 @@ Whether the cron schedule should be active upon creation
 
 Defaults to `true`
 
+#### beforeExit: Function
+A function to execute just before the process exits
+
+Intended for graceful cleanup
+
+The `maxDelay` option is **not** applied to the duration of this function's execution
+
+Defaults to `undefined`
+
 #### exitCode: number
 The status code to exit with
 
@@ -51,12 +60,3 @@ Defaults to `0`
 The status code to exit with if the `beforeExit` function errors
 
 Defaults to `1`
-
-#### beforeExit: Function
-A function to execute just before the process exits
-
-Intended for graceful cleanup
-
-The `maxDelay` option is **not** applied to the duration of this function's execution
-
-Defaults to `undefined`

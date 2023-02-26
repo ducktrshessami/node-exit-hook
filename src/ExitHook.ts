@@ -117,16 +117,16 @@ export type ExitHookOptions = {
     restartDelay?: number;
     maxDelay?: number;
     active?: boolean;
+    beforeExit?: BeforeExitHook;
     exitCode?: number;
     errorExitCode?: number;
-    beforeExit?: BeforeExitHook;
 };
 
 type ParsedExitHookOptions = {
     restartDelay: number;
     maxDelay?: number;
     active: boolean;
+    beforeExit?: BeforeExitHook;
     exitCode: number;
     errorExitCode: number;
-    beforeExit?: BeforeExitHook;
 };
