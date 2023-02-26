@@ -50,6 +50,8 @@ export default class ExitHook {
     }
 
     private async task(): Promise<void> {
+        this.jobComplete = true;
+        this.job!.stop();
         if (this._active) {
             await this.exit();
         }
