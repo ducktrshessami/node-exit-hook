@@ -42,11 +42,18 @@ export default class ExitHook {
     }
 
     private async exit(): Promise<void> {
-        this.clearTimeouts();
-        if (this.options.beforeExit) {
-            await this.options.beforeExit();
+        try {
+            this.clearTimeouts();
+            if (this.options.beforeExit) {
+                await this.options.beforeExit();
+            }
         }
-        process.exit(this.options.exitCode);
+        catch (err: any) {
+            console.error(err);
+        }
+        finally {
+            process.exit(this.options.exitCode);
+        }
     }
 
     private async task(): Promise<void> {
