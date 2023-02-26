@@ -22,7 +22,8 @@ export default class ExitHook {
             ...options,
             restartDelay: options.restartDelay ?? 0,
             active: options.active ?? true,
-            exitCode: options.exitCode ?? 0
+            exitCode: options.exitCode ?? 0,
+            errorExitCode: options.errorExitCode ?? 1
         };
     }
 
@@ -42,6 +43,7 @@ export default class ExitHook {
     }
 
     private async exit(): Promise<void> {
+        let exitCode: number = this.options.exitCode;
         try {
             this.clearTimeouts();
             if (this.options.beforeExit) {
@@ -50,9 +52,10 @@ export default class ExitHook {
         }
         catch (err: any) {
             console.error(err);
+            exitCode = this.options.errorExitCode;
         }
         finally {
-            process.exit(this.options.exitCode);
+            process.exit(exitCode);
         }
     }
 
@@ -115,6 +118,7 @@ export type ExitHookOptions = {
     maxDelay?: number;
     active?: boolean;
     exitCode?: number;
+    errorExitCode?: number;
     beforeExit?: BeforeExitHook;
 };
 
@@ -123,5 +127,6 @@ type ParsedExitHookOptions = {
     maxDelay?: number;
     active: boolean;
     exitCode: number;
+    errorExitCode: number;
     beforeExit?: BeforeExitHook;
 };
