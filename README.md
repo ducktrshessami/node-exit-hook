@@ -47,7 +47,7 @@ A function to execute just before the process exits
 
 Intended for graceful cleanup
 
-The `maxDelay` option is **not** applied to the duration of this function's execution
+The [maxDelay](#maxdelay-number) option is **not** applied to the duration of this function's execution
 
 Defaults to `undefined`
 
@@ -57,6 +57,6 @@ The status code to exit with
 Defaults to `0`
 
 #### errorExitCode: number
-The status code to exit with if the `beforeExit` function errors
+The status code to exit with if the [beforeExit](#beforeexit-function) function errors
 
 Defaults to `1`
