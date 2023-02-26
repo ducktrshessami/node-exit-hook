@@ -47,6 +47,11 @@ The status code to exit with
 
 Defaults to `0`
 
+#### errorExitCode: number
+The status code to exit with if the `beforeExit` function errors
+
+Defaults to `1`
+
 #### beforeExit: Function
 A function to execute just before the process exits
 
