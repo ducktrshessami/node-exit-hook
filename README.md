@@ -21,6 +21,19 @@ exit.start(); // Process exits
 ### Hook Options
 All options are optional
 
+```js
+const { exitHook } = require("exit-hook");
+
+exitHook("0 0 * * *", {
+    restartDelay: 300_000,
+    maxDelay: 3_600_000,
+    active: false,
+    beforeExit: () => console.log("Cleanup!"),
+    exitCode: 0,
+    errorExitCode: 1
+});
+```
+
 #### restartDelay: number
 A delay (in milliseconds) after restarting the hook before the process exits
 
