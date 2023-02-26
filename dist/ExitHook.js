@@ -1,23 +1,16 @@
-import { schedule, ScheduledTask } from "node-cron";
-
-export default class ExitHook {
-    private readonly options: ParsedExitHookOptions;
-    private _active: boolean;
-    private job: Nullable<ScheduledTask>;
-    private jobComplete: boolean;
-    private restartTimeout: Nullable<NodeJS.Timeout>;
-    private maxTimeout: Nullable<NodeJS.Timeout>;
-
-    constructor(cronExpression: string, options: ExitHookOptions) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_cron_1 = require("node-cron");
+class ExitHook {
+    constructor(cronExpression, options) {
         this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
-        this.job = schedule(cronExpression, this.task.bind(this), { scheduled: this.options.active });
+        this.job = (0, node_cron_1.schedule)(cronExpression, this.task.bind(this), { scheduled: this.options.active });
         this.jobComplete = false;
         this.restartTimeout = null;
         this.maxTimeout = null;
     }
-
-    private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
+    static parseOptions(options) {
         return {
             ...options,
             restartDelay: options.restartDelay ?? 0,
@@ -26,31 +19,28 @@ export default class ExitHook {
             errorExitCode: options.errorExitCode ?? 1
         };
     }
-
-    private clearRestartTimeout(): void {
+    clearRestartTimeout() {
         if (this.restartTimeout) {
             clearTimeout(this.restartTimeout);
             this.restartTimeout = null;
         }
     }
-
-    private clearTimeouts(): void {
+    clearTimeouts() {
         this.clearRestartTimeout();
         if (this.maxTimeout) {
             clearTimeout(this.maxTimeout);
             this.maxTimeout = null;
         }
     }
-
-    private async exit(): Promise<void> {
-        let exitCode: number = this.options.exitCode;
+    async exit() {
+        let exitCode = this.options.exitCode;
         try {
             this.clearTimeouts();
             if (this.options.beforeExit) {
                 await this.options.beforeExit();
             }
         }
-        catch (err: any) {
+        catch (err) {
             console.error(err);
             exitCode = this.options.errorExitCode;
         }
@@ -58,10 +48,9 @@ export default class ExitHook {
             process.exit(exitCode);
         }
     }
-
-    private async task(): Promise<void> {
+    async task() {
         this.jobComplete = true;
-        this.job!.stop();
+        this.job.stop();
         if (this._active) {
             await this.exit();
         }
@@ -69,16 +58,13 @@ export default class ExitHook {
             this.maxTimeout = setTimeout(this.exit, this.options.maxDelay);
         }
     }
-
-    get active(): boolean {
+    get active() {
         return this._active;
     }
-
-    get destroyed(): boolean {
+    get destroyed() {
         return !!this.job;
     }
-
-    destroy(): void {
+    destroy() {
         if (this.job) {
             this.job.stop();
             this.clearTimeouts();
@@ -86,8 +72,7 @@ export default class ExitHook {
             this._active = false;
         }
     }
-
-    start(): void {
+    start() {
         if (this.job && !this._active) {
             if (this.jobComplete) {
                 this.restartTimeout = setTimeout(this.exit, this.options.restartDelay);
@@ -98,35 +83,11 @@ export default class ExitHook {
             this._active = true;
         }
     }
-
-    stop(): void {
+    stop() {
         if (this.job && this._active) {
             this.clearRestartTimeout();
             this._active = false;
         }
     }
 }
-
-type Nullable<T> = T | null;
-
-type Awaitable<T> = T | Promise<T>;
-
-type BeforeExitHook = () => Awaitable<void>;
-
-export type ExitHookOptions = {
-    restartDelay?: number;
-    maxDelay?: number;
-    active?: boolean;
-    beforeExit?: BeforeExitHook;
-    exitCode?: number;
-    errorExitCode?: number;
-};
-
-type ParsedExitHookOptions = {
-    restartDelay: number;
-    maxDelay?: number;
-    active: boolean;
-    beforeExit?: BeforeExitHook;
-    exitCode: number;
-    errorExitCode: number;
-};
+exports.default = ExitHook;
