@@ -11,7 +11,7 @@ export default class ExitHook {
     constructor(cronExpression: string, options: ExitHookOptions) {
         this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
-        this.job = schedule(cronExpression, this.task, { scheduled: this.options.active });
+        this.job = schedule(cronExpression, this.task.bind(this), { scheduled: this.options.active });
         this.jobComplete = false;
         this.restartTimeout = null;
         this.maxTimeout = null;
