@@ -1,7 +1,8 @@
-import ExitHook, { ExitHookOptions } from "./ExitHook";
+import Hook, { ExitHookOptions } from "./ExitHook";
 
 export function exitHook(cronExpression: string, options: ExitHookOptions = {}): ExitHook {
-    return new ExitHook(cronExpression, options);
+    return new Hook(cronExpression, options);
 }
 
-export { type default as ExitHook, ExitHookOptions } from "./ExitHook";
+export type ExitHook = Hook;
+export { ExitHookOptions };
