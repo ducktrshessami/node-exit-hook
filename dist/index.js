@@ -1,11 +1,1 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.exitHook = void 0;
-const ExitHook_1 = __importDefault(require("./ExitHook"));
-function exitHook(cronExpression, options = {}) {
-    return new ExitHook_1.default(cronExpression, options);
-}
-exports.exitHook = exitHook;
+"use strict";var r=Object.defineProperty;var u=Object.getOwnPropertyDescriptor;var n=Object.getOwnPropertyNames;var h=Object.prototype.hasOwnProperty;var m=(e,t)=>{for(var i in t)r(e,i,{get:t[i],enumerable:!0})},p=(e,t,i,a)=>{if(t&&typeof t=="object"||typeof t=="function")for(let s of n(t))!h.call(e,s)&&s!==i&&r(e,s,{get:()=>t[s],enumerable:!(a=u(t,s))||a.enumerable});return e};var x=e=>p(r({},"__esModule",{value:!0}),e);var c={};m(c,{exitHook:()=>b});module.exports=x(c);var l=require("node-cron"),o=class{constructor(t,i){this.options=o.parseOptions(i),this._active=this.options.active,this.job=(0,l.schedule)(t,this.task.bind(this),{scheduled:this.options.active}),this.jobComplete=!1,this.restartTimeout=null,this.maxTimeout=null}static parseOptions(t){return{...t,restartDelay:t.restartDelay??0,active:t.active??!0,exitCode:t.exitCode??0,errorExitCode:t.errorExitCode??1}}clearRestartTimeout(){this.restartTimeout&&(clearTimeout(this.restartTimeout),this.restartTimeout=null)}clearTimeouts(){this.clearRestartTimeout(),this.maxTimeout&&(clearTimeout(this.maxTimeout),this.maxTimeout=null)}async exit(){let t=this.options.exitCode;try{this.clearTimeouts(),this.options.beforeExit&&await this.options.beforeExit()}catch(i){console.error(i),t=this.options.errorExitCode}finally{process.exit(t)}}async task(){this.jobComplete=!0,this.job.stop(),this._active?await this.exit():this.options.maxDelay&&(this.maxTimeout=setTimeout(this.exit,this.options.maxDelay))}get active(){return this._active}get destroyed(){return!!this.job}destroy(){this.job&&(this.job.stop(),this.clearTimeouts(),this.job=null,this._active=!1)}start(){this.job&&!this._active&&(this.jobComplete?this.restartTimeout=setTimeout(this.exit,this.options.restartDelay):this.job.start(),this._active=!0)}stop(){this.job&&this._active&&(this.clearRestartTimeout(),this._active=!1)}};function b(e,t={}){return new o(e,t)}0&&(module.exports={exitHook});

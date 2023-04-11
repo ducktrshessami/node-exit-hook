@@ -1,29 +1,28 @@
 {
   "name": "exit-hook",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A utility module for dynamic scheduled exits",
   "main": "dist/index.js",
-  "types": "typings/index.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "declare": "tsc -d --emitDeclarationOnly"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ducktrshessami/node-exit-hook.git"
-  },
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "repository": "git@github.com:ducktrshessami/node-exit-hook.git",
   "author": "ducktrshessami",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ducktrshessami/node-exit-hook/issues"
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs",
+    "types": "./dist/index.d.ts"
   },
-  "homepage": "https://github.com/ducktrshessami/node-exit-hook#readme",
+  "scripts": {
+    "build": "tsup"
+  },
   "dependencies": {
     "node-cron": "^3.0.2"
   },
   "devDependencies": {
-    "@types/node": "^18.14.1",
-    "@types/node-cron": "^3.0.7"
+    "@types/node": "^18.15.11",
+    "@types/node-cron": "^3.0.7",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   }
 }
