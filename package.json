@@ -23,7 +23,9 @@
     "node-cron": "^3.0.2"
   },
   "devDependencies": {
-    "@types/node": "^18.14.1",
-    "@types/node-cron": "^3.0.7"
+    "@types/node": "^18.15.11",
+    "@types/node-cron": "^3.0.7",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   }
 }
