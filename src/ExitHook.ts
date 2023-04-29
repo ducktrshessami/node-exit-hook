@@ -68,7 +68,9 @@ export default class ExitHook {
         let exitCode: number = this.options.exitCode;
         try {
             this.clearTimeouts();
+            this.logVerbose("Exit triggered");
             if (this.options.beforeExit) {
+                this.logVerbose("Executing before-exit hook");
                 await this.options.beforeExit();
             }
         }
@@ -77,6 +79,7 @@ export default class ExitHook {
             exitCode = this.options.errorExitCode;
         }
         finally {
+            this.logVerbose(`Exiting with code ${exitCode}`);
             process.exit(exitCode);
         }
     }
