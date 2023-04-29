@@ -84,10 +84,12 @@ export default class ExitHook {
     private async task(): Promise<void> {
         this.jobComplete = true;
         this.job!.stop();
+        this.logVerbose("Cron job completed");
         if (this._active) {
             await this.exit();
         }
         else if (this.options.maxDelay) {
+            this.logVerbose(`Max delay set. Exiting in ${this.options.maxDelay} ms`);
             this.maxTimeout = setTimeout(this.exit.bind(this), this.options.maxDelay);
         }
     }
