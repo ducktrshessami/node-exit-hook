@@ -112,20 +112,8 @@ export default class ExitHook {
 }
 
 type Nullable<T> = T | null;
-
 type Awaitable<T> = T | Promise<T>;
-
 type BeforeExitHook = () => Awaitable<void>;
-
-export type ExitHookOptions = {
-    restartDelay?: number;
-    maxDelay?: number;
-    active?: boolean;
-    beforeExit?: BeforeExitHook;
-    exitCode?: number;
-    errorExitCode?: number;
-};
-
 type ParsedExitHookOptions = {
     restartDelay: number;
     maxDelay?: number;
@@ -133,4 +121,7 @@ type ParsedExitHookOptions = {
     beforeExit?: BeforeExitHook;
     exitCode: number;
     errorExitCode: number;
+};
+export type ExitHookOptions = {
+    [key in keyof ParsedExitHookOptions]?: ParsedExitHookOptions[key]
 };
