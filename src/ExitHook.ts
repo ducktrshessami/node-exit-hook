@@ -24,6 +24,7 @@ export default class ExitHook {
     private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
         return {
             ...options,
+            verbose: options.verbose ?? false,
             restartDelay: options.restartDelay ?? 0,
             active: options.active ?? true,
             exitCode: options.exitCode ?? 0,
