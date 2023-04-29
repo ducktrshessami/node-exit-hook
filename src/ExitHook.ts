@@ -40,6 +40,12 @@ export default class ExitHook {
         };
     }
 
+    private logVerbose(...messages: Array<any>): void {
+        if (this.options.verbose) {
+            console.debug(...messages);
+        }
+    }
+
     private clearRestartTimeout(): void {
         if (this.restartTimeout) {
             clearTimeout(this.restartTimeout);
