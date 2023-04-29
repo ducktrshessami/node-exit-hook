@@ -11,7 +11,11 @@ export default class ExitHook {
     constructor(cronExpression: string, options: ExitHookOptions) {
         this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
-        this.job = schedule(cronExpression, this.task.bind(this), { scheduled: this.options.active });
+        this.job = schedule(
+            cronExpression,
+            this.task.bind(this),
+            { scheduled: this.options.active }
+        );
         this.jobComplete = false;
         this.restartTimeout = null;
         this.maxTimeout = null;
@@ -66,7 +70,7 @@ export default class ExitHook {
             await this.exit();
         }
         else if (this.options.maxDelay) {
-            this.maxTimeout = setTimeout(this.exit, this.options.maxDelay);
+            this.maxTimeout = setTimeout(this.exit.bind(this), this.options.maxDelay);
         }
     }
 
@@ -90,7 +94,7 @@ export default class ExitHook {
     start(): void {
         if (this.job && !this._active) {
             if (this.jobComplete) {
-                this.restartTimeout = setTimeout(this.exit, this.options.restartDelay);
+                this.restartTimeout = setTimeout(this.exit.bind(this), this.options.restartDelay);
             }
             else {
                 this.job.start();
