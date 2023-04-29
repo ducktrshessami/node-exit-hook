@@ -119,6 +119,7 @@ export default class ExitHook {
 
     stop(): void {
         if (this.job && this._active) {
+            this.logVerbose("Stopping hook");
             this.clearRestartTimeout();
             this._active = false;
         }
