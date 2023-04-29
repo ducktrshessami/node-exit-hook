@@ -42,7 +42,7 @@ export default class ExitHook {
 
     private logVerbose(...messages: Array<any>): void {
         if (this.options.verbose) {
-            console.debug(...messages);
+            console.debug("[exit-hook]", ...messages);
         }
     }
 
