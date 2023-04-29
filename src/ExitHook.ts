@@ -104,7 +104,9 @@ export default class ExitHook {
 
     start(): void {
         if (this.job && !this._active) {
+            this.logVerbose("Starting hook");
             if (this.jobComplete) {
+                this.logVerbose(`Hook started after cron job completed. Exiting in ${this.options.restartDelay} ms`);
                 this.restartTimeout = setTimeout(this.exit.bind(this), this.options.restartDelay);
             }
             else {
