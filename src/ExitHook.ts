@@ -115,6 +115,7 @@ type Nullable<T> = T | null;
 type Awaitable<T> = T | Promise<T>;
 type BeforeExitHook = () => Awaitable<void>;
 type ParsedExitHookOptions = {
+    verbose: boolean;
     restartDelay: number;
     maxDelay?: number;
     active: boolean;
