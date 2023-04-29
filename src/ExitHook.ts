@@ -1,34 +1,52 @@
 import { schedule, ScheduledTask } from "node-cron";
 
 export default class ExitHook {
-    private readonly options: ParsedExitHookOptions;
+    readonly options: Readonly<ParsedExitHookOptions>;
     private _active: boolean;
     private job: Nullable<ScheduledTask>;
     private jobComplete: boolean;
     private restartTimeout: Nullable<NodeJS.Timeout>;
     private maxTimeout: Nullable<NodeJS.Timeout>;
 
-    constructor(cronExpression: string, options: ExitHookOptions) {
+    constructor(readonly cronExpression: string, options: ExitHookOptions) {
         this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
         this.job = schedule(
-            cronExpression,
+            this.cronExpression,
             this.task.bind(this),
             { scheduled: this.options.active }
         );
         this.jobComplete = false;
         this.restartTimeout = null;
         this.maxTimeout = null;
+        if (this.options.active) {
+            this.logVerbose(`Exit scheduled with pattern "${this.cronExpression}"`);
+        }
     }
 
-    private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
-        return {
+    get active(): boolean {
+        return this._active;
+    }
+
+    get destroyed(): boolean {
+        return !!this.job;
+    }
+
+    private static parseOptions(options: ExitHookOptions): Readonly<ParsedExitHookOptions> {
+        return Object.freeze({
             ...options,
+            verbose: options.verbose ?? false,
             restartDelay: options.restartDelay ?? 0,
             active: options.active ?? true,
             exitCode: options.exitCode ?? 0,
             errorExitCode: options.errorExitCode ?? 1
-        };
+        });
+    }
+
+    private logVerbose(...messages: Array<any>): void {
+        if (this.options.verbose) {
+            console.debug("[exit-hook]", ...messages);
+        }
     }
 
     private clearRestartTimeout(): void {
@@ -50,7 +68,9 @@ export default class ExitHook {
         let exitCode: number = this.options.exitCode;
         try {
             this.clearTimeouts();
+            this.logVerbose("Exit triggered");
             if (this.options.beforeExit) {
+                this.logVerbose("Executing before-exit hook");
                 await this.options.beforeExit();
             }
         }
@@ -59,6 +79,7 @@ export default class ExitHook {
             exitCode = this.options.errorExitCode;
         }
         finally {
+            this.logVerbose(`Exiting with code ${exitCode}`);
             process.exit(exitCode);
         }
     }
@@ -66,20 +87,14 @@ export default class ExitHook {
     private async task(): Promise<void> {
         this.jobComplete = true;
         this.job!.stop();
+        this.logVerbose("Cron job completed");
         if (this._active) {
             await this.exit();
         }
         else if (this.options.maxDelay) {
+            this.logVerbose(`Max delay set. Exiting in ${this.options.maxDelay} ms`);
             this.maxTimeout = setTimeout(this.exit.bind(this), this.options.maxDelay);
         }
-    }
-
-    get active(): boolean {
-        return this._active;
-    }
-
-    get destroyed(): boolean {
-        return !!this.job;
     }
 
     destroy(): void {
@@ -88,16 +103,20 @@ export default class ExitHook {
             this.clearTimeouts();
             this.job = null;
             this._active = false;
+            this.logVerbose("Hook destroyed");
         }
     }
 
     start(): void {
         if (this.job && !this._active) {
+            this.logVerbose("Starting hook");
             if (this.jobComplete) {
+                this.logVerbose(`Hook started after cron job completed. Exiting in ${this.options.restartDelay} ms`);
                 this.restartTimeout = setTimeout(this.exit.bind(this), this.options.restartDelay);
             }
             else {
                 this.job.start();
+                this.logVerbose(`Exit scheduled with pattern "${this.cronExpression}"`);
             }
             this._active = true;
         }
@@ -105,6 +124,7 @@ export default class ExitHook {
 
     stop(): void {
         if (this.job && this._active) {
+            this.logVerbose("Stopping hook");
             this.clearRestartTimeout();
             this._active = false;
         }
@@ -112,25 +132,17 @@ export default class ExitHook {
 }
 
 type Nullable<T> = T | null;
-
 type Awaitable<T> = T | Promise<T>;
-
 type BeforeExitHook = () => Awaitable<void>;
-
-export type ExitHookOptions = {
-    restartDelay?: number;
-    maxDelay?: number;
-    active?: boolean;
-    beforeExit?: BeforeExitHook;
-    exitCode?: number;
-    errorExitCode?: number;
-};
-
 type ParsedExitHookOptions = {
+    verbose: boolean;
     restartDelay: number;
     maxDelay?: number;
     active: boolean;
     beforeExit?: BeforeExitHook;
     exitCode: number;
     errorExitCode: number;
+};
+export type ExitHookOptions = {
+    [key in keyof ParsedExitHookOptions]?: ParsedExitHookOptions[key]
 };
