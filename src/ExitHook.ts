@@ -98,6 +98,7 @@ export default class ExitHook {
             this.clearTimeouts();
             this.job = null;
             this._active = false;
+            this.logVerbose("Hook destroyed");
         }
     }
 
