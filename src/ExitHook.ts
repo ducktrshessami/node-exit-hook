@@ -21,6 +21,14 @@ export default class ExitHook {
         this.maxTimeout = null;
     }
 
+    get active(): boolean {
+        return this._active;
+    }
+
+    get destroyed(): boolean {
+        return !!this.job;
+    }
+
     private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
         return {
             ...options,
@@ -73,14 +81,6 @@ export default class ExitHook {
         else if (this.options.maxDelay) {
             this.maxTimeout = setTimeout(this.exit.bind(this), this.options.maxDelay);
         }
-    }
-
-    get active(): boolean {
-        return this._active;
-    }
-
-    get destroyed(): boolean {
-        return !!this.job;
     }
 
     destroy(): void {
