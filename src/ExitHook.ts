@@ -70,7 +70,7 @@ export default class ExitHook {
             await this.exit();
         }
         else if (this.options.maxDelay) {
-            this.maxTimeout = setTimeout(this.exit, this.options.maxDelay);
+            this.maxTimeout = setTimeout(this.exit.bind(this), this.options.maxDelay);
         }
     }
 
@@ -94,7 +94,7 @@ export default class ExitHook {
     start(): void {
         if (this.job && !this._active) {
             if (this.jobComplete) {
-                this.restartTimeout = setTimeout(this.exit, this.options.restartDelay);
+                this.restartTimeout = setTimeout(this.exit.bind(this), this.options.restartDelay);
             }
             else {
                 this.job.start();
