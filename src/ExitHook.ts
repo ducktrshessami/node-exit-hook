@@ -1,7 +1,7 @@
 import { schedule, ScheduledTask } from "node-cron";
 
 export default class ExitHook {
-    private readonly options: ParsedExitHookOptions;
+    readonly options: ParsedExitHookOptions;
     private _active: boolean;
     private job: Nullable<ScheduledTask>;
     private jobComplete: boolean;
@@ -9,7 +9,7 @@ export default class ExitHook {
     private maxTimeout: Nullable<NodeJS.Timeout>;
 
     constructor(readonly cronExpression: string, options: ExitHookOptions) {
-        this.options = ExitHook.parseOptions(options);
+        this.options = Object.freeze(ExitHook.parseOptions(options));
         this._active = this.options.active;
         this.job = schedule(
             this.cronExpression,
