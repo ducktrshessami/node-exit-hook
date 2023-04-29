@@ -8,17 +8,20 @@ export default class ExitHook {
     private restartTimeout: Nullable<NodeJS.Timeout>;
     private maxTimeout: Nullable<NodeJS.Timeout>;
 
-    constructor(cronExpression: string, options: ExitHookOptions) {
+    constructor(readonly cronExpression: string, options: ExitHookOptions) {
         this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
         this.job = schedule(
-            cronExpression,
+            this.cronExpression,
             this.task.bind(this),
             { scheduled: this.options.active }
         );
         this.jobComplete = false;
         this.restartTimeout = null;
         this.maxTimeout = null;
+        if (this.options.active) {
+            this.logVerbose(`Exit scheduled with pattern "${this.cronExpression}"`);
+        }
     }
 
     get active(): boolean {
@@ -105,6 +108,7 @@ export default class ExitHook {
             }
             else {
                 this.job.start();
+                this.logVerbose(`Exit scheduled with pattern "${this.cronExpression}"`);
             }
             this._active = true;
         }
