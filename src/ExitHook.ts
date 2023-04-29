@@ -1,7 +1,7 @@
 import { schedule, ScheduledTask } from "node-cron";
 
 export default class ExitHook {
-    readonly options: ParsedExitHookOptions;
+    readonly options: Readonly<ParsedExitHookOptions>;
     private _active: boolean;
     private job: Nullable<ScheduledTask>;
     private jobComplete: boolean;
@@ -9,7 +9,7 @@ export default class ExitHook {
     private maxTimeout: Nullable<NodeJS.Timeout>;
 
     constructor(readonly cronExpression: string, options: ExitHookOptions) {
-        this.options = Object.freeze(ExitHook.parseOptions(options));
+        this.options = ExitHook.parseOptions(options);
         this._active = this.options.active;
         this.job = schedule(
             this.cronExpression,
@@ -32,15 +32,15 @@ export default class ExitHook {
         return !!this.job;
     }
 
-    private static parseOptions(options: ExitHookOptions): ParsedExitHookOptions {
-        return {
+    private static parseOptions(options: ExitHookOptions): Readonly<ParsedExitHookOptions> {
+        return Object.freeze({
             ...options,
             verbose: options.verbose ?? false,
             restartDelay: options.restartDelay ?? 0,
             active: options.active ?? true,
             exitCode: options.exitCode ?? 0,
             errorExitCode: options.errorExitCode ?? 1
-        };
+        });
     }
 
     private logVerbose(...messages: Array<any>): void {
