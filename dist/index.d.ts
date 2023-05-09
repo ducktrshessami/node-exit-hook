@@ -1,4 +1,4 @@
-declare class ExitHook$1 {
+declare class ExitHook {
     readonly cronExpression: string;
     readonly options: Readonly<ParsedExitHookOptions>;
     private _active;
@@ -35,6 +35,5 @@ type ExitHookOptions = {
 };
 
 declare function exitHook(cronExpression: string, options?: ExitHookOptions): ExitHook;
-type ExitHook = ExitHook$1;
 
 export { ExitHook, ExitHookOptions, exitHook };
