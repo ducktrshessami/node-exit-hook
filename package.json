@@ -20,9 +20,9 @@
     "node-cron": "^3.0.2"
   },
   "devDependencies": {
-    "@types/node": "^20.1.1",
-    "@types/node-cron": "^3.0.7",
-    "tsup": "^6.7.0",
-    "typescript": "^5.0.4"
+    "@types/node": "^20.3.3",
+    "@types/node-cron": "^3.0.8",
+    "tsup": "^7.1.0",
+    "typescript": "^5.1.6"
   }
 }
