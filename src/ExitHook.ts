@@ -1,5 +1,14 @@
 import { schedule, ScheduledTask } from "node-cron";
 
+function unrefTimeout<Args extends any[]>(
+    fn: (...args: Args) => void,
+    ms?: number,
+    ...args: Args
+): NodeJS.Timeout {
+    return setTimeout(fn, ms, ...args)
+        .unref();
+}
+
 export default class ExitHook {
     readonly options: Readonly<ParsedExitHookOptions>;
     private _active: boolean;
@@ -93,7 +102,7 @@ export default class ExitHook {
         }
         else if (this.options.maxDelay) {
             this.logVerbose(`Max delay set. Exiting in ${this.options.maxDelay} ms`);
-            this.maxTimeout = setTimeout(this.exit.bind(this), this.options.maxDelay);
+            this.maxTimeout = unrefTimeout(this.exit.bind(this), this.options.maxDelay);
         }
     }
 
@@ -112,7 +121,7 @@ export default class ExitHook {
             this.logVerbose("Starting hook");
             if (this.jobComplete) {
                 this.logVerbose(`Hook started after cron job completed. Exiting in ${this.options.restartDelay} ms`);
-                this.restartTimeout = setTimeout(this.exit.bind(this), this.options.restartDelay);
+                this.restartTimeout = unrefTimeout(this.exit.bind(this), this.options.restartDelay);
             }
             else {
                 this.job.start();
