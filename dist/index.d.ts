@@ -36,4 +36,4 @@ type ExitHookOptions = {
 
 declare function exitHook(cronExpression: string, options?: ExitHookOptions): ExitHook;
 
-export { ExitHook, ExitHookOptions, exitHook };
+export { ExitHook, type ExitHookOptions, exitHook };
